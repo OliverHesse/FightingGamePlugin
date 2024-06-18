@@ -1,0 +1,4 @@
+name: FightingGamePlugin
+version: '${version}'
+main: me.oliverhesse.fightinggameplugin.FightingGamePlugin
+api-version: '1.20'

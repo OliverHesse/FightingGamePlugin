@@ -1,0 +1,4 @@
+name: FightingGamePlugin
+version: '1.0-SNAPSHOT'
+main: me.oliverhesse.fightinggameplugin.FightingGamePlugin
+api-version: '1.20'
