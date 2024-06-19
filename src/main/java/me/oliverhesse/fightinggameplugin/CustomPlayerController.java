@@ -21,7 +21,8 @@ import static java.lang.Math.abs;
 
 public class CustomPlayerController implements Listener {
 
-    private final float AVATAR_SPEED = 0.1f;
+    private final float AVATAR_SPEED = 0.2f;
+    private final float JUMP_POWER = 1f;
     private final Plugin plugin;
     public CustomPlayerController(Plugin plugin){
         this.plugin = plugin;
@@ -49,33 +50,57 @@ public class CustomPlayerController implements Listener {
 
         }
         //limit movement and handle movement stuff
-        event.setCancelled(true);
+
         if(!player.getPersistentDataContainer().has(new NamespacedKey(plugin,"avatar"))){
+            event.setCancelled(true);
             return;
         }
 
         UUID avatarID = player.getPersistentDataContainer().get(new NamespacedKey(plugin,"avatar"),new UUIDDataType());
         Entity avatar = player.getWorld().getEntity(avatarID);
         if(avatar instanceof ArmorStand){
+            //store current y velocity
+            double YVel = avatar.getVelocity().getY();
+            plugin.getServer().getLogger().info("curr velocity of: " +((Double) YVel).toString());
             Vector direction = event.getTo().subtract(event.getFrom()).toVector();
             //now i want to move it all to in terms of 1,-1 or 0
             //it is probably more efficient to do if > 0 but for now this works
-            direction.setX(direction.getX()/abs(direction.getX()));
-            direction.setZ(direction.getZ()/abs(direction.getZ()));
-            plugin.getServer().getLogger().info(direction.toString());
-            plugin.getServer().getLogger().info(direction.toString());
+            //currently Z is the players forward and backwards movement
+            if(direction.getX() != 0){direction.setY(direction.getX()/abs(direction.getX()));direction.setX(0);}
+            if(direction.getZ() != 0){direction.setZ(direction.getZ()/abs(direction.getZ()));}
+            //plugin.getServer().getLogger().info(direction.toString());
+
             Location avatarLocation = avatar.getLocation();
             avatarLocation.setPitch(avatar.getPitch());
             avatarLocation.setYaw(avatar.getYaw());
             avatarLocation.setZ(avatarLocation.getZ()+direction.getZ()*AVATAR_SPEED);
             avatar.teleport(avatarLocation);
+            avatar.setVelocity(new Vector(0,YVel,0));
+            if(avatar.isOnGround()){
+                plugin.getServer().getLogger().info("On ground:");
+                direction.setZ(0);
+
+                if(direction.getY()>0){
+                    plugin.getServer().getLogger().info("Trying to jump");
+                    direction.setY(direction.getY()*JUMP_POWER);
+                    avatar.setVelocity(direction);
+                } else if (direction.getY()<0) {
+                    //currently do nothing
+                }
+
+            }else{
+                plugin.getServer().getLogger().info("Not on ground with curr velocity of: " +((Double) YVel).toString());
+
+            }
+
+
 
         }else{
             //raise error here
         }
 
 
-
+        event.setCancelled(true);
 
     }
 

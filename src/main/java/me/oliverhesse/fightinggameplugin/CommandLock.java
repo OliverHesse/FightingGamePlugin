@@ -1,5 +1,6 @@
 package me.oliverhesse.fightinggameplugin;
 
+import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -19,7 +20,10 @@ public class CommandLock implements CommandExecutor {
 
             player.getPersistentDataContainer().set(new NamespacedKey(plugin,"InGame"), PersistentDataType.BOOLEAN,true);
             player.setWalkSpeed(0.1f);
-
+            Location loc = player.getLocation();
+            loc.setYaw(90);
+            loc.setPitch(0);
+            player.teleport(loc);
             return true;
         }
         return false;
