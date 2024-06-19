@@ -1,43 +1,92 @@
 package me.oliverhesse.fightinggameplugin;
 
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerVelocityEvent;
+import org.bukkit.event.inventory.InventoryEvent;
+import org.bukkit.event.player.*;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.util.Vector;
+import org.checkerframework.checker.units.qual.N;
+
+import javax.naming.Name;
+import java.util.UUID;
+
+import static java.lang.Math.abs;
 
 public class CustomPlayerController implements Listener {
 
-    private final float LockedMoveSpeed = 0.01f;
-
+    private final float AVATAR_SPEED = 0.1f;
     private final Plugin plugin;
     public CustomPlayerController(Plugin plugin){
         this.plugin = plugin;
+    }
+    @EventHandler
+    public void PlayerInteractEvent(PlayerInteractEvent event){
+        //can be used to detect left or right click. which i will use for light and special
+        //block will be backwards movement
+
+
+
     }
 
 
     @EventHandler
     public void PlayerMoveEvent(PlayerMoveEvent event){
-        plugin.getServer().getLogger().info("Player tried to move");
-        plugin.getServer().getLogger().info(event.getTo().toString());
-        plugin.getServer().getLogger().info(event.getFrom().toString());
-        event.setTo(event.getFrom());
-        //event.setCancelled(true);
+        Player player = event.getPlayer();
+        if(!player.getPersistentDataContainer().has(new NamespacedKey(plugin,"InGame"))){
+            return;
+        }
+
+        boolean gameState = player.getPersistentDataContainer().get(new NamespacedKey(plugin,"InGame"),PersistentDataType.BOOLEAN);
+        if(!gameState){
+            return;
+
+        }
+        //limit movement and handle movement stuff
+        event.setCancelled(true);
+        if(!player.getPersistentDataContainer().has(new NamespacedKey(plugin,"avatar"))){
+            return;
+        }
+
+        UUID avatarID = player.getPersistentDataContainer().get(new NamespacedKey(plugin,"avatar"),new UUIDDataType());
+        Entity avatar = player.getWorld().getEntity(avatarID);
+        if(avatar instanceof ArmorStand){
+            Vector direction = event.getTo().subtract(event.getFrom()).toVector();
+            //now i want to move it all to in terms of 1,-1 or 0
+            //it is probably more efficient to do if > 0 but for now this works
+            direction.setX(direction.getX()/abs(direction.getX()));
+            direction.setZ(direction.getZ()/abs(direction.getZ()));
+            plugin.getServer().getLogger().info(direction.toString());
+            plugin.getServer().getLogger().info(direction.toString());
+            Location avatarLocation = avatar.getLocation();
+            avatarLocation.setPitch(avatar.getPitch());
+            avatarLocation.setYaw(avatar.getYaw());
+            avatarLocation.setZ(avatarLocation.getZ()+direction.getZ()*AVATAR_SPEED);
+            avatar.teleport(avatarLocation);
+
+        }else{
+            //raise error here
+        }
+
+
+
+
     }
 
 
     @EventHandler
     public void PlayerJoinEvent(PlayerJoinEvent event){
-        event.getPlayer().setFlySpeed(0.01f);
-        //event.getPlayer().setGameMode(GameMode.SPECTATOR);
+        event.getPlayer().getInventory().setHeldItemSlot(0);
+        event.getPlayer().getPersistentDataContainer().set(new NamespacedKey(this.plugin, "directionX"), PersistentDataType.INTEGER, 0);
+        event.getPlayer().getPersistentDataContainer().set(new NamespacedKey(this.plugin, "directionY"), PersistentDataType.INTEGER, 0);
+        //event.getPlayer().setFlySpeed(0.01f);
+        //event.getPlayer().setGameMode(GameMode.SURVIVAL);
         //this.plugin.getServer().getScheduler().runTaskTimer(plugin, /* Lambda: */ task -> {
         //    Entity entity = createArmorStand(event.getPlayer().getLocation());
         //    event.getPlayer().setSpectatorTarget(entity);
@@ -47,28 +96,6 @@ public class CustomPlayerController implements Listener {
 
     }
 
-    public ArmorStand createArmorStand(Location location) {
-        // Get the world from the location
-        World world = location.getWorld();
 
-        // Ensure the world is not null
-        if (world == null) {
-            Bukkit.getLogger().severe("World is null for the given location");
-            return null;
-        }
-
-        // Spawn the armor stand at the specified location
-        ArmorStand armorStand = (ArmorStand) world.spawnEntity(location, EntityType.ARMOR_STAND);
-
-        // Customize the armor stand (optional)
-        armorStand.setVisible(true); // Set visibility
-        armorStand.setGravity(false); // Set gravity
-
-        armorStand.setCustomNameVisible(true); // Make custom name visible
-        armorStand.setArms(true); // Add arms
-        armorStand.setBasePlate(false); // Remove base plate
-        armorStand.setSmall(false); // Set size
-        return  armorStand;
-    }
 
 }

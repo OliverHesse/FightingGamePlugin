@@ -2,3 +2,13 @@ name: FightingGamePlugin
 version: '1.0-SNAPSHOT'
 main: me.oliverhesse.fightinggameplugin.FightingGamePlugin
 api-version: '1.20'
+commands:
+  lock:
+    description: changes game mode to in battle
+    usage: /lock
+  unlock:
+    description: changes game mode to out of battle
+    usage: /unlock
+  spawn_avatar:
+    description: spawns a dummy
+    usage: /spawn_avatar
