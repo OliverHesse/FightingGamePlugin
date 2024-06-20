@@ -31,7 +31,7 @@ public class CommandSpawnAvatar implements CommandExecutor {
 
         return false;
     }
-    public ArmorStand createArmorStand(Location location) {
+    static ArmorStand createArmorStand(Location location) {
         // Get the world from the location
         World world = location.getWorld();
 

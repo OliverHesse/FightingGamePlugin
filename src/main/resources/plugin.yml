@@ -2,6 +2,8 @@ name: FightingGamePlugin
 version: '${version}'
 main: me.oliverhesse.fightinggameplugin.FightingGamePlugin
 api-version: '1.20'
+depend:
+  - ProtocolLib
 commands:
   lock:
     description: changes game mode to in battle
@@ -12,3 +14,6 @@ commands:
   spawn_avatar:
     description: spawns a dummy
     usage: /spawn_avatar
+  create_arena:
+    description: spawns an arena and puts 2 players in with avatars to control
+    usage: /create_arena

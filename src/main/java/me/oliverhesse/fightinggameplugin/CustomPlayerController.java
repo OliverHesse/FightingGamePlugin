@@ -18,6 +18,7 @@ import javax.naming.Name;
 import java.util.UUID;
 
 import static java.lang.Math.abs;
+import static java.lang.Math.toRadians;
 
 public class CustomPlayerController implements Listener {
 
@@ -45,6 +46,7 @@ public class CustomPlayerController implements Listener {
         }
 
         boolean gameState = player.getPersistentDataContainer().get(new NamespacedKey(plugin,"InGame"),PersistentDataType.BOOLEAN);
+        player.getServer().getLogger().info(((Boolean) gameState).toString());
         if(!gameState){
             return;
 
@@ -59,14 +61,18 @@ public class CustomPlayerController implements Listener {
         UUID avatarID = player.getPersistentDataContainer().get(new NamespacedKey(plugin,"avatar"),new UUIDDataType());
         Entity avatar = player.getWorld().getEntity(avatarID);
         if(avatar instanceof ArmorStand){
+
+
+            //local X is forward and backwards
+            //local Z is left and right
             //store current y velocity
             double YVel = avatar.getVelocity().getY();
-            plugin.getServer().getLogger().info("curr velocity of: " +((Double) YVel).toString());
+            //plugin.getServer().getLogger().info("curr velocity of: " +((Double) YVel).toString());
             Vector direction = event.getTo().subtract(event.getFrom()).toVector();
             //now i want to move it all to in terms of 1,-1 or 0
             //it is probably more efficient to do if > 0 but for now this works
             //currently Z is the players forward and backwards movement
-            if(direction.getX() != 0){direction.setY(direction.getX()/abs(direction.getX()));direction.setX(0);}
+            if(direction.getX() != 0){direction.setY((direction.getX()/abs(direction.getX()))*-1);direction.setX(0);}
             if(direction.getZ() != 0){direction.setZ(direction.getZ()/abs(direction.getZ()));}
             //plugin.getServer().getLogger().info(direction.toString());
 
@@ -77,7 +83,7 @@ public class CustomPlayerController implements Listener {
             avatar.teleport(avatarLocation);
             avatar.setVelocity(new Vector(0,YVel,0));
             if(avatar.isOnGround()){
-                plugin.getServer().getLogger().info("On ground:");
+                //.getServer().getLogger().info("On ground:");
                 direction.setZ(0);
 
                 if(direction.getY()>0){
@@ -89,7 +95,7 @@ public class CustomPlayerController implements Listener {
                 }
 
             }else{
-                plugin.getServer().getLogger().info("Not on ground with curr velocity of: " +((Double) YVel).toString());
+                //plugin.getServer().getLogger().info("Not on ground with curr velocity of: " +((Double) YVel).toString());
 
             }
 
