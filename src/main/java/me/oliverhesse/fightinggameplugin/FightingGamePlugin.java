@@ -1,7 +1,9 @@
 package me.oliverhesse.fightinggameplugin;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
@@ -17,6 +19,8 @@ public final class FightingGamePlugin extends JavaPlugin {
         getCommand("lock").setExecutor(new CommandLock(this));
         getCommand("unlock").setExecutor(new CommandUnlock(this));
         getCommand("spawn_avatar").setExecutor(new CommandSpawnAvatar(this));
+        getCommand("create_arena").setExecutor(new CommandCreateArena(this));
+        getCommand("clear_arenas").setExecutor(new CommandClearArenas(this));
         // Plugin startup logic
         getServer().getPluginManager().registerEvents(new CustomPlayerController(this),this);
 
@@ -36,10 +40,14 @@ public final class FightingGamePlugin extends JavaPlugin {
     public void create_arena(Player player1, Player player2, Location location){
         FightingArena NewArena = new FightingArena(this,player1,player2,location);
 
-        // Z plane is where the avatar move on
-        // X plane is the input plane used to detect jumps
+
 
         ActiveArena.add(NewArena);
+    }
+    public void clear_arena(){
+        for(FightingArena arena: this.ActiveArena){
+            arena.destroyArena();
+        }
     }
 
 }

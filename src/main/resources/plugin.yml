@@ -17,3 +17,6 @@ commands:
   create_arena:
     description: spawns an arena and puts 2 players in with avatars to control
     usage: /create_arena
+  clear_arenas:
+    description: deletes all arenas
+    usage: /clear_arenas

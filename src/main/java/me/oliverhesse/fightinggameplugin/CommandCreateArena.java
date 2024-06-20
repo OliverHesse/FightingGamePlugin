@@ -17,6 +17,8 @@ public class CommandCreateArena implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
         if(commandSender instanceof Player player){
+            //temporary
+            ((FightingGamePlugin) plugin).create_arena(player,player,player.getLocation());
 
             if(args.length != 2){
                 return false;
