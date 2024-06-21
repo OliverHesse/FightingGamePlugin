@@ -22,7 +22,7 @@ import static java.lang.Math.toRadians;
 
 public class CustomPlayerController implements Listener {
 
-    private final float AVATAR_SPEED = 0.2f;
+    private final float AVATAR_SPEED = 0.4f;
     private final float JUMP_POWER = 1f;
     private final Plugin plugin;
     public CustomPlayerController(Plugin plugin){
@@ -80,6 +80,20 @@ public class CustomPlayerController implements Listener {
             avatarLocation.setPitch(avatar.getPitch());
             avatarLocation.setYaw(avatar.getYaw());
             avatarLocation.setZ(avatarLocation.getZ()+direction.getZ()*AVATAR_SPEED);
+            Location checkLocation = avatarLocation.clone();
+            checkLocation.setZ(checkLocation.getZ()+0.5*direction.getZ());
+            if(checkLocation.getBlock().getBlockData().getMaterial() != Material.AIR){
+                // should be an invalid block
+                //this should move the player back to 0.5 away from the block
+
+                Double change = -1*direction.getZ()*AVATAR_SPEED;
+
+                plugin.getServer().getLogger().info(((Double) avatarLocation.getZ()).toString());
+                plugin.getServer().getLogger().info(change.toString());
+                plugin.getServer().getLogger().info(((Double) (avatarLocation.getBlockZ()+change)).toString());
+                avatarLocation.setZ(avatarLocation.getZ()+change);
+                plugin.getServer().getLogger().info(((Double) avatarLocation.getZ()).toString());
+            }
             avatar.teleport(avatarLocation);
             avatar.setVelocity(new Vector(0,YVel,0));
             if(avatar.isOnGround()){
